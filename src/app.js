@@ -1,4 +1,5 @@
 const express = require('express');
+require('./db/mongoose'); // Mongoose configuration (connection and parameters)
 
 const app = express();
 
