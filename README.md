@@ -1,7 +1,7 @@
 # Industrial Monitor API
 This is a REST API to monitor industrial equipment. It's being developed using Node.js, ES6/ESNext, Express, Passport, Jest, MongoDB, Mongoose, Docker, Docker Compose, etc.
 
-# Current Status
+## Current Status
 This application is under development.
 
 ## Api Reference
