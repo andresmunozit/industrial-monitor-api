@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const jwt = require('jsonwebtoken');
 
 const adminRouter = require('./v1/admin');
 const userRouter = require('./v1/user');
