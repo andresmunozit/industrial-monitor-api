@@ -1,5 +1,5 @@
 # Industrial Monitor API
-This is a REST API to monitor industrial equipment. It's being developed using Node.js, ES6/ESNext, Express, JWT, Bcrypt, Jest, MongoDB, Mongoose, Docker, Docker Compose, etc.
+This is a REST API to monitor industrial equipment. It's being developed using Node.js, ES6/ESNext, Express, JWT, Bcrypt, Jest, Supertest, MongoDB, Mongoose, Docker, Docker Compose, etc.
 
 ## Current Status
 This application is under development.
@@ -11,6 +11,7 @@ This section describes the endpoints of the API:
 |---|---|---|---|
 |**Login API**|
 |POST|/api/v1/login|Login to the application (administrator or user)|Yes|
+|POST|/api/v1/logout|Logout of the application (administrator or user)|Yes|
 |**Administration API**|
 |**Administration / Users**|
 |GET|/api/v1/admin/users|Index the application users|No|
@@ -71,6 +72,11 @@ docker exec -it [CONTAINER_ID] npm run seed
 |---|---|
 |POST|/api/v1/login|
 
+Headers:
+```
+Content-Type: application/json
+```
+
 Request body:
 ```
 {
@@ -91,4 +97,22 @@ Response body:
     "token": "eyJhbGciOiJIUzI1N..."
 }
 ```
+Response code: `200`
+
 ---
+
+|Method|Endpoint|
+|---|---|
+|POST|/api/v1/logout|
+
+Headers: 
+```
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1N...
+```
+
+Request body: Not required
+
+Response body: None
+
+Response code: `200`
