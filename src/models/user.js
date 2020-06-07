@@ -16,7 +16,13 @@ const userSchema = mongoose.Schema({
         required: [true, 'Email is required'],
         trim: true,
         unique: true,
-        maxLenght: [64, 'The email is too long']
+        maxLenght: [64, 'The email is too long'],
+        validate:{
+            validator: function(v){
+                return validator.isEmail(v);
+            },
+            message: props => `${props.value} is not a valid email`
+        },
     },
     name: {
         type: String,
@@ -82,10 +88,25 @@ userSchema.methods.toJSON = function(){
 userSchema.methods.createToken = async function(){
     const user = this;
     const _id = this._id;
-    const token = jwt.sign({_id}, process.env.JWT_SECRET);
+    const token = jwt.sign({_id, iat: Date.now()}, process.env.JWT_SECRET);
     user.tokens.push({token});
     await user.save();
     return token;
+};
+
+userSchema.methods.deleteToken = async function(token){
+    const user = this;
+    const tokenIndex = user.tokens.findIndex( userToken => userToken.token === token );
+    if(tokenIndex === -1) throw 'Token doesn\'t exist';
+    user.tokens.splice(tokenIndex, 1);
+    await user.save();
+};
+
+// Validate token: Is the token in the tokens array?
+userSchema.methods.validToken = function( token ){
+    const user = this;
+    const tokenIndex = user.tokens.findIndex( userToken => userToken.token === token );
+    return tokenIndex >= 0 ? true : false;
 };
 
 const User = mongoose.model( 'User', userSchema );
