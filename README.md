@@ -7,33 +7,33 @@ This application is under development.
 ## Api Reference
 This section describes the endpoints of the API:
 
-|HTTP method|Endpoint|Description|Implemented|
-|---|---|---|---|
+|HTTP method|Endpoint|Description|Implemented|Allowed roles|
+|---|---|---|---|---|
 |**Login API**|
-|POST|/api/v1/login|Login to the application (administrator or user)|Yes|
-|POST|/api/v1/logout|Logout of the application (administrator or user)|Yes|
+|POST|/api/v1/login|Login to the application (administrator or user)|Yes|N/A|
+|POST|/api/v1/logout|Logout of the application (administrator or user)|Yes|User, Admin|
 |**Administration API**|
 |**Administration / Users**|
-|GET|/api/v1/admin/users|Index the application users|No|
-|GET|/api/v1/admin/users/:id|Get an individual user|No|
-|POST|/api/v1/admin/users|Create a user|No|
-|PATCH|/api/v1/admin/users/:id|Update a user|No|
-|DELETE|/api/v1/admin/users/:id|Delete a user|No|
+|GET|/api/v1/admin/users|Index the application users|No|Admin|
+|GET|/api/v1/admin/users/:id|Get an individual user|No|Admin|
+|POST|/api/v1/admin/users|Create a user|No|Admin|
+|PATCH|/api/v1/admin/users/:id|Update a user|No|Admin|
+|DELETE|/api/v1/admin/users/:id|Delete a user|No|Admin|
 |**Administration / Devices**|
-|GET|/api/v1/admin/devices|Index the application devices|No|
-|GET|/api/v1/admin/devices/:id|Get an individual device|No|
-|POST|/api/v1/admin/devices|Create a device|No|
-|PATCH|/api/v1/admin/devices/:id|Update a device|No|
-|DELETE|/api/v1/admin/devices/:id|Delete a device|No|
+|GET|/api/v1/admin/devices|Index the application devices|No|Admin|
+|GET|/api/v1/admin/devices/:id|Get an individual device|No|Admin|
+|POST|/api/v1/admin/devices|Create a device|No|Admin|
+|PATCH|/api/v1/admin/devices/:id|Update a device|No|Admin|
+|DELETE|/api/v1/admin/devices/:id|Delete a device|No|Admin|
 |**Administration / Variables**|
-|GET|/api/v1/admin/devices/:id/variables|List the variables being monitored in this device|No|
-|POST|/api/v1/admin/devices/:id/variables|Create an allowed variable in this device|No|
-|PATCH|/api/v1/admin/devices/:id/variables/:id|Update an allowed variable in this device|No|
-|DELETE|/api/v1/admin/devices/:id/variables/:id|Delete an allowed variable in this device|No|
+|GET|/api/v1/admin/devices/:id/variables|List the variables being monitored in this device|No|Admin|
+|POST|/api/v1/admin/devices/:id/variables|Create an allowed variable in this device|No|Admin|
+|PATCH|/api/v1/admin/devices/:id/variables/:id|Update an allowed variable in this device|No|Admin|
+|DELETE|/api/v1/admin/devices/:id/variables/:id|Delete an allowed variable in this device|No|Admin|
 |**Administration / Permissions**|
-|GET|/api/v1/admin/users/:id/devices|Get the devices that a user can interact with|No|
-|POST|/api/v1/admin/users/:id/devices/:id|Give permission to a user over a device|No|
-|DELETE|/api/v1/admin/users/:id/devices/:id|Revoke the permission to a user over a device|No|
+|GET|/api/v1/admin/users/:id/devices|Get the devices that a user can interact with|No|Admin|
+|POST|/api/v1/admin/users/:id/devices/:id|Give permission to a user over a device|No|Admin|
+|DELETE|/api/v1/admin/users/:id/devices/:id|Revoke the permission to a user over a device|No|Admin|
 |**Telemetry API**|
 |POST|/api/v1/telemetry/devices/login|Login to the application (device)|Yes|
 |POST|/api/v1/telemetry/devices/:id/measurements|A device send the monitored data|No|
