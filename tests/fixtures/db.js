@@ -19,16 +19,28 @@ const userTwo = {
     name: 'Carl', 
     lastname: 'Sagan',
     password: 'ABCD-1234',
-    role: 'user'
+    role: User.ROLE.USER
+};
+
+const userThreeId = new mongoose.Types.ObjectId();
+const userThree = {
+    _id: userThreeId,
+    email: 'peter@thiel.com',
+    name: 'Peter', 
+    lastname: 'Thiel',
+    password: 'ABCD-1234',
+    role: User.ROLE.ADMIN
 };
 
 const setupDatabase = async () => {
     await User.deleteMany();
     await new User(userTwo).save();
+    await new User(userThree).save();
 };
 
 module.exports = { 
     setupDatabase,
     userOne,
     userTwo,
+    userThree,
 };
