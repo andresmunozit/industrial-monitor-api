@@ -66,6 +66,8 @@ userSchema.pre('save', async function(next){
     next();
 });
 
+userSchema.statics.ROLE = ROLE;
+
 // Find user with credentials
 userSchema.statics.getUserByCredentials = async function(email, password) {
     try{
