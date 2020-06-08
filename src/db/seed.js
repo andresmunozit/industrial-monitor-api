@@ -7,7 +7,7 @@ const User = require('../models/user')
 const seedAdmin = {
     email: 'admin@example.com',
     name: 'admin',
-    lastname: 'admin',
+    lastname: User.ROLE.ADMIN,
     password: 'example',
     role: 'admin',
 };
