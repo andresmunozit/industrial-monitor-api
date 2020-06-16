@@ -2,10 +2,9 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 
 const auth = async (req, res, next) => {
+    
     const authHeader = req.get('Authorization');
-    if(!authHeader || !authHeader.includes('Bearer ')){
-        return res.status(403).json({msg: 'Not authorized'});
-    };
+    if(!authHeader || !authHeader.includes('Bearer ')) return res.status(403).json({msg: 'Not authorized'});
     const token = authHeader.split(' ')[1];
 
     try{
@@ -14,13 +13,10 @@ const auth = async (req, res, next) => {
         
         try{
             const user = await User.findById(userId);
-            if( user.validToken(token) ){
-                req.user = user;
-                req.token = token;
-                next();
-            } else {
-                return res.status(403).json({msg: 'Not authorized'});
-            };
+            if( !user.validToken(token) ) return res.status(403).json({msg: 'Not authorized'});
+            req.user = user;
+            req.token = token;
+            next();
         }catch(error){
             res.status(500).json({msg: 'Internal server error'});
         };
