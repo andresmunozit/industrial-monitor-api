@@ -4,9 +4,8 @@ const allowedBodyParams = (...allowedParams) => {
 
         const params = Object.keys(req.body);
 
-        if( !params.every( param => allowedParams.includes(param) )) {
-            return res.status(400).json({msg: 'Illegal body parameters'});
-        };
+        const notAllowedParams = params.filter( param => !allowedParams.includes(param) );
+        if(notAllowedParams.length) return res.status(400).json({msg: `Illegal body parameter(s): ${notAllowedParams}`});
 
         req.allowedBodyParams = allowedParams;
 
