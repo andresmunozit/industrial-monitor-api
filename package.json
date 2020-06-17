@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon -e js src/index.js",
-    "test": "jest --watch --verbose",
+    "test": "jest --watchAll --verbose",
     "seed": "node src/db/seed.js"
   },
   "jest": {
