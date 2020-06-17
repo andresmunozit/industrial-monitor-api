@@ -26,21 +26,21 @@ const userSchema = mongoose.Schema({
     },
     name: {
         type: String,
-        required: [true, 'Name is required'],
+        required: [true, '"name" is required'],
         trim: true,
         unique: false,
-        maxLenght: [1000, 'The name is too long']
+        maxLenght: [100, '"name" is too long']
     },
     lastname: {
         type: String,
-        required: [true, 'Lastname is required'],
+        required: [true, '"lastname" is required'],
         trim: true,
         unique: false,
-        maxLenght: [1000, 'The lastname is too long'],
+        maxLenght: [100, '"lastname" is too long'],
     },
     password: {
         type: String,
-        required: true,
+        required: false,
         minlength: 7,
         trim: true
     },
