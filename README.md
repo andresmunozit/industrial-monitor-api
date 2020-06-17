@@ -68,23 +68,26 @@ docker exec -it [CONTAINER_ID] npm run seed
 ```
 
 ## Login API
+
 |Method|Endpoint|
 |---|---|
 |POST|/api/v1/login|
 
-Headers:
+**Headers:**
 ```
 Content-Type: application/json
 ```
 
-Request body:
+**Request body:**
 ```
 {
 	"email":"admin@example.com",
 	"password": "example"
 }
 ```
-Response body:
+**Response code:** `200`
+
+**Response body:**
 ```
 {
     "user": {
@@ -97,7 +100,6 @@ Response body:
     "token": "eyJhbGciOiJIUzI1N..."
 }
 ```
-Response code: `200`
 
 ---
 
@@ -105,14 +107,80 @@ Response code: `200`
 |---|---|
 |POST|/api/v1/logout|
 
-Headers: 
+**Headers:**
 ```
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1N...
 ```
 
-Request body: Not required
+**Request body:** Not required
 
-Response body: None
+**Response code:** `200`
 
-Response code: `200`
+**Response body:** None
+
+---
+
+## Administration API
+
+|Method|Endpoint|
+|---|---|
+|GET|/api/v1/admin/users|
+
+**Headers:**
+```
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1N...
+```
+
+**Request body:** Not required
+
+**Response code:** `200`
+
+**Response body:**
+```
+[
+    {
+        "_id": "5ee9799577b179008fbcea22",
+        "email": "admin@example.com",
+        "name": "admin",
+        "lastname": "admin",
+        "role": "admin"
+    },
+    {
+        "_id": "5ee9b8f7cb9bb0003a388b3a",
+        "email": "samir@example.com",
+        "name": "Samir",
+        "lastname": "García",
+        "role": "user"
+    },
+    {
+        "_id": "5ee9b908cb9bb0003a388b3b",
+        "email": "nahyla@example.com",
+        "name": "Nahyla",
+        "lastname": "García",
+        "role": "user"
+    }
+]
+```
+
+**Query parameters:**
+
+**Filter:** The filter is based on [Mongoose](https://mongoosejs.com/docs/api.html#model_Model.find) filter implementation and the [Qs](https://www.npmjs.com/package/qs) NPM module, used nativelly by [Express](https://expressjs.com/es/api.html#express.urlencoded).
+
+The following request will return all the users who their name is exactly 'admin':
+```
+/api/v1/admin/users?filter[name]=admin
+```
+
+The following request will return all the users who has a Gmail address registered:
+```
+/api/v1/admin/users?filter[email][$regex]=gmail.com
+```
+
+The following request will return all the users with the role "user" and which email is from Office:
+```
+/api/v1/admin/users?filter[email][$regex]=office.com&filter[role]=user
+```
+
+If no filter is provided, no data will be filtered (in this case the application would return all the users).
