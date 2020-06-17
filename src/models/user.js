@@ -54,8 +54,12 @@ const userSchema = mongoose.Schema({
             type: String,
             required: true
         }
-    }]
-}, {timestamps: true});
+    }]}, 
+    { 
+        timestamps: true,
+        collation: { locale: 'en_US', strength: 1 }
+    },
+);
 
 
 // Encrypt password
