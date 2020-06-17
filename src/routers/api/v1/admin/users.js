@@ -3,7 +3,6 @@ const devicesRouter = require('./users/devices');
 const User = require('../../../../models/user');
 const mongoose = require('mongoose');
 const allowedBodyParams = require('../../../../middleware/allowedBodyParams');
-const { deleteOne } = require('../../../../models/user');
 
 router.use(':id/devices', devicesRouter);
 
@@ -35,7 +34,7 @@ router.post('/', allowedBodyParams('name', 'lastname', 'email', 'role'), async (
         console.log(error.errors);
         if(error.code === 11000) res.status(400).json({msg: 'The email already exists'}); // Since email is the only unique allowed parameter
         if(error.errors){
-            const messages = Object.keys(error.errors).map( errorField => ({msg: error.errors[errorField].properties.message}) )
+            const messages = Object.keys(error.errors).map( errorField => ({msg: error.errors[errorField].properties.message}) );
             res.status(400).json(messages);
         };
         res.status(500).json();
