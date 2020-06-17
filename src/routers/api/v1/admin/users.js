@@ -7,10 +7,21 @@ const allowedBodyParams = require('../../../../middleware/allowedBodyParams');
 router.use(':id/devices', devicesRouter);
 
 router.get('/', async (req, res) => {
+
+    const filter = req.query.filter || {};
+    // const sort = req.query.filter || 1;
+    // const limit = req.query.limit || 20;
+    // const skip = req.query.skip || 0;
+
     try{
-        const users = await User.find();
+        console.log(filter);
+        const users = await User.find(filter)
+            // .sort(sort)
+            // .limit(limit)
+            // .skip(skip);
+
         res.json(users);
-    } catch {
+    } catch(error) {
         res.status(500).json();
     };
 });
@@ -35,7 +46,7 @@ router.post('/', allowedBodyParams('name', 'lastname', 'email', 'role'), async (
         if(error.code === 11000) res.status(400).json({msg: 'The email already exists'}); // Since email is the only unique allowed parameter
         if(error.errors){
             const messages = Object.keys(error.errors).map( errorField => ({msg: error.errors[errorField].properties.message}) );
-            res.status(400).json(messages);
+            return res.status(400).json(messages);
         };
         res.status(500).json();
     };
