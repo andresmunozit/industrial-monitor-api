@@ -164,9 +164,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1N...
 ]
 ```
 
-**Query parameters:**
+## Query parameters
+Allowed query parameters are `filter`, `sort`, `limit`, and `skip`. Any other parameter will return status code `400` and the following body:
+```
+{
+    "msg": "Illegal query parameter(s): illegalParam1"
+}
+```
 
-**Filter:** The filter is based on [Mongoose](https://mongoosejs.com/docs/api.html#model_Model.find) filter implementation and the [Qs](https://www.npmjs.com/package/qs) NPM module, used nativelly by [Express](https://expressjs.com/es/api.html#express.urlencoded).
+Below is the description of the operation of the query parameters.
+
+### Filter
+The filter is based on [Mongoose](https://mongoosejs.com/docs/api.html#model_Model.find) filter implementation and the [Qs](https://www.npmjs.com/package/qs) NPM module, used nativelly by [Express](https://expressjs.com/es/api.html#express.urlencoded).
 
 The following request will return all the users who their name is exactly 'admin':
 ```
@@ -183,4 +192,16 @@ The following request will return all the users with the role "user" and which e
 /api/v1/admin/users?filter[email][$regex]=office.com&filter[role]=user
 ```
 
-If no filter is provided, no data will be filtered (in this case the application would return all the users).
+If no filter is provided, no data will be filtered (in this case the application would return all the users). If 
+
+### Sort
+Sorting can be done using `-1` for descending order and `1` for ascending order, if any other value is provided it'll be ignored.
+
+The following request will return all the users ordered by their name, descending:
+```
+/api/v1/admin/users?sort[name]=-1
+```
+The following request will return in first place the users sorted by `role` ascending, that is, first the role `admin` ordered by `email` descending, and then the users with role `user` ordered by `email` descending:
+```
+/api/v1/admin/users?sort[role]=1&sort[email]=-1
+```
