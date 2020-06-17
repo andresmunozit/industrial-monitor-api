@@ -192,7 +192,7 @@ The following request will return all the users with the role "user" and which e
 /api/v1/admin/users?filter[email][$regex]=office.com&filter[role]=user
 ```
 
-If no filter is provided, no data will be filtered (in this case the application would return all the users). If 
+If no filter is provided, no data will be filtered (in this case the application would return all the users). 
 
 ### Sort
 Sorting can be done using `-1` for descending order and `1` for ascending order, if any other value is provided it'll be ignored.
