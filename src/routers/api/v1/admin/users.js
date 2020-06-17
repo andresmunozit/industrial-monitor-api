@@ -3,20 +3,17 @@ const devicesRouter = require('./users/devices');
 const User = require('../../../../models/user');
 const mongoose = require('mongoose');
 const allowedBodyParams = require('../../../../middleware/allowedBodyParams');
+const allowedQueryParams = require('../../../../middleware/allowedQueryParams');
+const validateQuery = require('../../../../middleware/validateQuery');
 
 router.use(':id/devices', devicesRouter);
 
-router.get('/', async (req, res) => {
-
-    const filter = req.query.filter || {};
-    // const sort = req.query.filter || 1;
-    // const limit = req.query.limit || 20;
-    // const skip = req.query.skip || 0;
+router.get('/',  allowedQueryParams('filter','sort','limit','skip'), validateQuery, async (req, res) => {
+    const { filter, sort } = req.validatedQuery;
 
     try{
-        console.log(filter);
         const users = await User.find(filter)
-            // .sort(sort)
+            .sort(sort)
             // .limit(limit)
             // .skip(skip);
 
