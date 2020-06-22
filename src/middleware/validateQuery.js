@@ -1,25 +1,85 @@
-const validateFilter = filter => filter || {};
+const ALLOWED_FILTER_QUERY_OPERATORS = ['$eq', '$gt', '$in', '$lt', '$ne', '$lte','$gte','$nin','$regex'];
+const MAX_LIMIT = 100;
+const DEFAULT_LIMIT = 20;
 
-const validateSort = sort => {
-    if(!sort) return {};
+const validateFields = (object, allowedFields) => {
+    if (!object) return {};
 
-    const allowedSortValues = ['-1', '1'];
+    const objectFields = Object.keys(object);
+    const notAllowedFields = objectFields.filter( objectField => !allowedFields.includes(objectField) );
+    if(notAllowedFields.length) return {error: `Not allowed field(s): ${notAllowedFields.join(', ')}.`}
+    return object;
+};
 
-    const sortedFields = Object.keys(sort);
-    for (let i = 0; i < sortedFields.length; i++) { // forEach doesn't return from the entire function but just from its callback, so for loop is used
-        const sortedField = sortedFields[i];
-        if( !allowedSortValues.includes(sort[sortedField]) ) return {};
+const validateFilterQueryOperators = (filter, allowedOperators) => {
+    if (!filter) return {};
+
+    for(const field in filter){
+        if(typeof filter[field] === 'string') break;
+        
+        const fieldOperators = Object.keys(filter[field]);
+        const notAllowedOperators = fieldOperators.filter( operator => !allowedOperators.includes(operator)); 
+        if(notAllowedOperators.length) return {error: `Not allowed operator(s) ${notAllowedOperators}`};
     };
+    return filter;
+};
 
+const validateSortValues = sort => {
+    if (!sort) return {};
+
+    for(const field in sort){
+        if(!parseInt(Number(sort[field]))) return {error: `Sort can be equals to -1, 0 or 1. Instead "${sort[field]}" was received.`};
+        if(sort < -1 || sort > 1) return {error: `Sort can be equals to -1, 0 or 1. Instead "${sort[field]}" was received.`};
+        sort[field] = parseInt(sort[field]);
+    };
     return sort;
 };
 
-const validateQuery = (req, res, next) => {
-    req.validatedQuery = {};
-    req.validatedQuery.filter = validateFilter(req.query.filter);
-    req.validatedQuery.sort = validateSort(req.query.sort);
+const validateLimit = (limit, maxLimit) => {
+    if (!limit) return DEFAULT_LIMIT;
 
-    next();
+    if (!parseInt(Number(limit))) return {error: `"limit" must be a positive integer, "${limit}" received instead.`};
+    if (limit < 0 || limit > maxLimit) return {error: `"limit" must be an integer between 0 and ${maxLimit}, "${limit}" received instead.`};
+
+    return parseInt(limit);
+};
+
+const validateSkip = skip => {
+    if (!skip) return 0;
+    
+    if (!parseInt(Number(skip))) return {error: `"skip" must be a positive integer, "${skip}" received instead.`};
+    console.log('SKIP', skip)
+    if (skip < 0 || skip > Math.pow(2, 31)) return {error: `"skip" must be an integer between 0 and 2^31, "${skip}" received instead.`};
+
+    return parseInt(skip);
+};
+
+const validateQuery = (allowedFields, allowedFilterQueryOperators = ALLOWED_FILTER_QUERY_OPERATORS, maxLimit = MAX_LIMIT) => {
+    return (req, res, next) => {
+        let filter, sort, skip, limit;
+
+        filter = validateFields(req.query.filter, allowedFields);
+        if (filter.error) return res.status(400).json({msg: `${filter.error} "filter" parameter validation.'`});
+
+        filter = validateFilterQueryOperators(req.query.filter, allowedFilterQueryOperators);
+        if (filter.error) return res.status(400).json({msg: `${filter.error} "filter" parameter validation.`});
+
+        sort = validateFields(req.query.sort, allowedFields);
+        if (sort.error) return res.status(400).json({msg: `${sort.error} "sort" parameter validation.`});
+
+        sort = validateSortValues(req.query.sort);
+        if (sort.error) return res.status(400).json({msg: `${sort.error} "sort" parameter validation.`});
+
+        limit = validateLimit(req.query.limit, maxLimit);
+        if (limit.error) return res.status(400).json({msg: `${limit.error} "limit" parameter validation.`});
+
+        skip = validateSkip(req.query.skip);
+        if (skip.error) return res.status(400).json({msg: `${skip.error} "skip" parameter validation.`})
+
+        req.validatedQuery = { filter, sort, skip, limit };
+
+        next();
+    };
 };
 
 module.exports = validateQuery;
