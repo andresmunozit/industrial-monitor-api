@@ -5,7 +5,7 @@ const allowedQueryParams = (...allowedParams) => {
         const params = Object.keys(req.query);
 
         const notAllowedParams = params.filter( param => !allowedParams.includes(param) );
-        if(notAllowedParams.length) return res.status(400).json({msg: `Illegal query parameter(s): ${notAllowedParams}`});
+        if(notAllowedParams.length) return res.status(400).json({msg: `Illegal query parameter(s): ${notAllowedParams.join(', ')}.`});
 
         next();
     };
