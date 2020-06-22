@@ -8,14 +8,16 @@ const validateQuery = require('../../../../middleware/validateQuery');
 
 router.use(':id/devices', devicesRouter);
 
-router.get('/',  allowedQueryParams('filter','sort','limit','skip'), validateQuery, async (req, res) => {
-    const { filter, sort } = req.validatedQuery;
+const getUsersAllowedFields = ['name', 'lastname', 'email', 'role'];
+
+router.get('/',  allowedQueryParams('filter','sort','limit','skip'), validateQuery(getUsersAllowedFields), async (req, res) => {
+    const { filter, sort, limit, skip } = req.validatedQuery;
 
     try{
         const users = await User.find(filter)
             .sort(sort)
-            // .limit(limit)
-            // .skip(skip);
+            .limit(limit)
+            .skip(skip);
 
         res.json(users);
     } catch(error) {
