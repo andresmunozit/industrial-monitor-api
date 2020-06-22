@@ -14,7 +14,7 @@ This section describes the endpoints of the API:
 |POST|/api/v1/logout|Logout of the application (administrator or user)|Yes|User, Admin|
 |**Administration API**|
 |**Administration / Users**|
-|GET|/api/v1/admin/users|Index the application users|No|Admin|
+|GET|/api/v1/admin/users|Index the application users|Yes|Admin|
 |GET|/api/v1/admin/users/:id|Get an individual user|No|Admin|
 |POST|/api/v1/admin/users|Create a user|No|Admin|
 |PATCH|/api/v1/admin/users/:id|Update a user|No|Admin|
@@ -194,8 +194,10 @@ The following request will return all the users with the role "user" and which e
 
 If no filter is provided, no data will be filtered (in this case the application would return all the users). 
 
+The allowed query operators are: `$eq`, `$gt`, `$in`, `$lt`, `$ne`, `$lte`,`$gte`,`$nin`,`$regex`. Any other query operator will return status `400` and a message body.
+
 ### Sort
-Sorting can be done using `-1` for descending order and `1` for ascending order, if any other value is provided it'll be ignored.
+Sorting can be done using `-1` for descending order and `1` for ascending order ( `0` will be ignored), if any other value is provided it'll return status `400` and a message body.
 
 The following request will return all the users ordered by their name, descending:
 ```
@@ -204,4 +206,28 @@ The following request will return all the users ordered by their name, descendin
 The following request will return in first place the users sorted by `role` ascending, that is, first the role `admin` ordered by `email` descending, and then the users with role `user` ordered by `email` descending:
 ```
 /api/v1/admin/users?sort[role]=1&sort[email]=-1
+```
+### Limit
+Limits the number of documents returned. The value provided must be a positive integer, and the maximmum limit is `100`, if any other value is provided, you'll recive status `400` and a message body. If it's not provided, the default limit is `20`. 
+
+The following request will return 30 documents:
+```
+/api/v1/admin/users?limit=30
+```
+
+### Skip
+Stablish an offset of documents. The value must be a positive integer, any other value will return status `400` and a body message. If this parameter is not sent, the default is `0`.
+
+The following request will return all the documents except the two first:
+```
+/api/v1/admin/users?skip=2
+```
+
+### Compound Queries
+Query parameters can be combined.
+
+For example, this request will return `10` users with `user` role, ordered ascending by `lastname`, except the `20` first, whose email contains `gmail`:
+
+```
+/api/v1/admin/users?filter[role]=user&sort[lastname]=1&skip=20&limit=10&filter[email][$regex]=gmail
 ```
