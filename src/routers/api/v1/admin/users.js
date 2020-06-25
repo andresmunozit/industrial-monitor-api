@@ -1,10 +1,12 @@
 const router = require('express').Router();
 const devicesRouter = require('./users/devices');
-const User = require('../../../../models/user');
 const mongoose = require('mongoose');
+const sendEmail = require('../../../../helpers/email/sendEmail');
+const User = require('../../../../models/user');
 const allowedBodyParams = require('../../../../middleware/allowedBodyParams');
 const allowedQueryParams = require('../../../../middleware/allowedQueryParams');
 const validateQuery = require('../../../../middleware/validateQuery');
+const { welcome } = require('../../../../helpers/email/emailTemplates');
 
 router.use(':id/devices', devicesRouter);
 
@@ -12,7 +14,6 @@ const getUsersAllowedFields = ['name', 'lastname', 'email', 'role'];
 
 router.get('/',  allowedQueryParams('filter','sort','limit','skip'), validateQuery(getUsersAllowedFields), async (req, res) => {
     const { filter, sort, limit, skip } = req.validatedQuery;
-
     try{
         const users = await User.find(filter)
             .sort(sort)
@@ -41,10 +42,12 @@ router.get('/:id', async (req, res) => {
 router.post('/', allowedBodyParams('name', 'lastname', 'email', 'role'), async (req, res) => {
     try{
         const user = new User(req.body);
+        const temporaryPassword = user.generateTemporaryPassword();
         await user.save();
-        res.json(user);
+        res.status(201).json(user);
+        const welcomeTemplate = welcome(user.email, user.name, temporaryPassword);
+        sendEmail(welcomeTemplate); // No need for await
     } catch(error) {
-        console.log(error.errors);
         if(error.code === 11000) res.status(400).json({msg: 'The email already exists'}); // Since email is the only unique allowed parameter
         if(error.errors){
             const messages = Object.keys(error.errors).map( errorField => ({msg: error.errors[errorField].properties.message}) );
@@ -65,7 +68,6 @@ router.patch('/:id', allowedBodyParams('name', 'lastname', 'email', 'role'), asy
 
         res.json(user);
     } catch (error) {
-        console.log(error);
         if(error.code === 11000) res.status(400).json({msg: 'The email already exists'});
         res.status(500).json();
     };
