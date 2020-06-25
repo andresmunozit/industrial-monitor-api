@@ -30,7 +30,10 @@ router.get('/:id', async (req, res) => {
         const user = await User.findById(req.params.id);
         if(!user) return res.status(404).json(); // null
         res.json(user);
-    } catch { // Bad id format, errors with the database
+    } catch(error) { // Bad id format, errors with the database
+        if(error.kind){
+            if(error.kind === 'ObjectId') res.status(400).json({msg: 'Wrong ID format'});
+        };
         res.status(500).json();
     };
 });
