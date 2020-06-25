@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const generatePassword = require('../helpers/passwordGenerator');
 
 const Schema = mongoose.Schema;
 
@@ -40,9 +41,13 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        required: false,
+        required: true,
         minlength: 7,
         trim: true
+    },
+    reset: {
+        type: Boolean,
+        required: false
     },
     role: {
         type: String,
@@ -61,6 +66,7 @@ const userSchema = mongoose.Schema({
     },
 );
 
+userSchema.statics.ROLE = ROLE;
 
 // Encrypt password
 userSchema.pre('save', async function(next){
@@ -69,8 +75,6 @@ userSchema.pre('save', async function(next){
     user.password = await bcrypt.hash(user.password, 8);
     next();
 });
-
-userSchema.statics.ROLE = ROLE;
 
 // Find user with credentials
 userSchema.statics.getUserByCredentials = async function(email, password) {
@@ -113,6 +117,13 @@ userSchema.methods.validToken = function( token ){
     const user = this;
     const tokenIndex = user.tokens.findIndex( userToken => userToken.token === token );
     return tokenIndex >= 0 ? true : false;
+};
+
+userSchema.methods.generateTemporaryPassword = function(){
+    const password = generatePassword();
+    this.password = password;
+    this.reset = true;
+    return password;
 };
 
 const User = mongoose.model( 'User', userSchema );
