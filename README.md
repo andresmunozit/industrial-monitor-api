@@ -15,8 +15,8 @@ This section describes the endpoints of the API:
 |**Administration API**|
 |**Administration / Users**|
 |GET|/api/v1/admin/users|Index the application users|Yes|Admin|
-|GET|/api/v1/admin/users/:id|Get an individual user|No|Admin|
-|POST|/api/v1/admin/users|Create a user|No|Admin|
+|GET|/api/v1/admin/users/:id|Get an individual user|Yes|Admin|
+|POST|/api/v1/admin/users|Create a user|Yes|Admin|
 |PATCH|/api/v1/admin/users/:id|Update a user|No|Admin|
 |DELETE|/api/v1/admin/users/:id|Delete a user|No|Admin|
 |**Administration / Devices**|
@@ -231,3 +231,81 @@ For example, this request will return `10` users with `user` role, ordered ascen
 ```
 /api/v1/admin/users?filter[role]=user&sort[lastname]=1&skip=20&limit=10&filter[email][$regex]=gmail
 ```
+
+---
+
+|Method|Endpoint|
+|---|---|
+|GET|/api/v1/admin/users/:id|
+
+**Headers:**
+```
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1N...
+```
+
+**Parameters:** `:id`, the id of the user
+
+**Request body:** Not required
+
+**Response code:** `200`
+
+**Response body:**
+```
+{
+    "_id": "5ee9b8f7cb9bb0003a388b3a",
+    "email": "samir@example.com",
+    "name": "Samir",
+    "lastname": "García",
+    "role": "user"
+}
+```
+---
+
+|Method|Endpoint|
+|---|---|
+|POST|/api/v1/admin/users|
+
+**Headers:**
+```
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1N...
+```
+
+**Request body:**
+```
+{
+    "email": "samir@example.com",
+    "name": "Samir",
+    "lastname": "García",
+    "role": "user"
+}
+```
+
+**Response code:** `201`
+
+**Response body:**
+```
+{
+    "_id": "5ee9b8f7cb9bb0003a388b3a",
+    "email": "samir@example.com",
+    "name": "Samir",
+    "lastname": "García",
+    "role": "user"
+}
+```
+
+When a user is created by an administrator, the application generates a temporary password for that user and sets the internal `reset` atribute to `true`. Then it'll send an email to the user with the following content:
+```
+Hello Samir
+
+An account has been created for you to access to the application. A temporary password has been generated, you need to change this password in order to access to the application.
+
+Temporary password: [generated_password]
+
+You can login to the application in the following link:
+
+[process.env.FRONTEND_URL]/login
+```
+
+Where the variable `process.env.FRONTEND_URL`, needs to be passed to the environment variables and the `login` route must be implemented in the frontend.
