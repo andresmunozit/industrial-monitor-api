@@ -6,7 +6,7 @@ const User = require('../../../../models/user');
 const allowedBodyParams = require('../../../../middleware/allowedBodyParams');
 const allowedQueryParams = require('../../../../middleware/allowedQueryParams');
 const validateQuery = require('../../../../middleware/validateQuery');
-const { welcome } = require('../../../../helpers/email/emailTemplates');
+const { welcome, resetPassword } = require('../../../../helpers/email/emailTemplates');
 
 router.use(':id/devices', devicesRouter);
 
@@ -57,16 +57,23 @@ router.post('/', allowedBodyParams('name', 'lastname', 'email', 'role'), async (
     };
 });
 
-router.patch('/:id', allowedBodyParams('name', 'lastname', 'email', 'role'), async (req, res) => {
+router.patch('/:id', allowedBodyParams('name', 'lastname', 'email', 'role'), allowedQueryParams('resetPassword'), async (req, res) => {
     try{
         const user = await User.findById(req.params.id);
         if(!user) return res.status(404).json(); // null
 
+        let temporaryPassword;
+        if (req.query.resetPassword === 'true') temporaryPassword = user.generateTemporaryPassword();
+
         req.allowedBodyParams.forEach( param => user[`${param}`] = req.body[`${param}`]);
 
         await user.save();
-
         res.json(user);
+
+        if (req.query.resetPassword === 'true'){
+            const resetPasswordTemplate = resetPassword(user.email, user.name, temporaryPassword);
+            sendEmail(resetPasswordTemplate);
+        };
     } catch (error) {
         if(error.code === 11000) res.status(400).json({msg: 'The email already exists'});
         res.status(500).json();
