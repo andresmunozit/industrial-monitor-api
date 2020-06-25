@@ -17,7 +17,7 @@ This section describes the endpoints of the API:
 |GET|/api/v1/admin/users|Index the application users|Yes|Admin|
 |GET|/api/v1/admin/users/:id|Get an individual user|Yes|Admin|
 |POST|/api/v1/admin/users|Create a user|Yes|Admin|
-|PATCH|/api/v1/admin/users/:id|Update a user|No|Admin|
+|PATCH|/api/v1/admin/users/:id|Update a user|Yes|Admin|
 |DELETE|/api/v1/admin/users/:id|Delete a user|No|Admin|
 |**Administration / Devices**|
 |GET|/api/v1/admin/devices|Index the application devices|No|Admin|
@@ -309,3 +309,58 @@ You can login to the application in the following link:
 ```
 
 Where the variable `process.env.FRONTEND_URL`, needs to be passed to the environment variables and the `login` route must be implemented in the frontend.
+
+An administration cannot set manually the password of a user.
+
+---
+
+|Method|Endpoint|
+|---|---|
+|PATCH|/api/v1/admin/users/:id|
+
+**Headers:**
+```
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1N...
+```
+
+**Request body:**
+
+The body parameters are optional. The only allowed body parameters are `email`, `name`, `lastname` and `role`. 
+```
+{
+    "email": "samir@example.com",
+    "name": "Samir",
+    "lastname": "García",
+    "role": "user"
+}
+```
+Any other body parameter provided will return status `400` and a message body:
+```
+{
+    "msg": "Illegal body parameter(s): _id"
+}
+```
+**Response code:** `200`
+
+**Response body:**
+```
+{
+    "_id": "5ee9b8f7cb9bb0003a388b3a",
+    "email": "samir@example.com",
+    "name": "Samir",
+    "lastname": "García",
+    "role": "user"
+}
+```
+
+## Query parameters
+The only allowed query parameter is `resetPassword`. Any other parameter will return status code `400` and the following body:
+```
+{
+    "msg": "Illegal query parameter(s): illegalParam1"
+}
+```
+### resetPassword
+
+The only accepted value is `true`, any other value will be ignored. This parameter set a temporary password to the user, and sends an email to the user, with the temporary password along with the instructions to change it.
