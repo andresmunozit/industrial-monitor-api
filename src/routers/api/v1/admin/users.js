@@ -7,6 +7,8 @@ const allowedBodyParams = require('../../../../middleware/allowedBodyParams');
 const allowedQueryParams = require('../../../../middleware/allowedQueryParams');
 const validateQuery = require('../../../../middleware/validateQuery');
 const { welcome, resetPassword } = require('../../../../helpers/email/emailTemplates');
+const checkId = require('../../../../middleware/checkId');
+
 
 router.use(':id/devices', devicesRouter);
 
@@ -26,15 +28,12 @@ router.get('/',  allowedQueryParams('filter','sort','limit','skip'), validateQue
     };
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', checkId, async (req, res) => {
     try{
         const user = await User.findById(req.params.id);
         if(!user) return res.status(404).json(); // null
         res.json(user);
     } catch(error) { // Bad id format, errors with the database
-        if(error.kind){
-            if(error.kind === 'ObjectId') res.status(400).json({msg: 'Wrong ID format'});
-        };
         res.status(500).json();
     };
 });
@@ -57,7 +56,7 @@ router.post('/', allowedBodyParams('name', 'lastname', 'email', 'role'), async (
     };
 });
 
-router.patch('/:id', allowedBodyParams('name', 'lastname', 'email', 'role'), allowedQueryParams('resetPassword'), async (req, res) => {
+router.patch('/:id', checkId, allowedBodyParams('name', 'lastname', 'email', 'role'), allowedQueryParams('resetPassword'), async (req, res) => {
     try{
         const user = await User.findById(req.params.id);
         if(!user) return res.status(404).json(); // null
@@ -80,7 +79,7 @@ router.patch('/:id', allowedBodyParams('name', 'lastname', 'email', 'role'), all
     };
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', checkId, async (req, res) => {
     try{
         const user = await User.findById(req.params.id);
         if(!user) return res.status(404).json(); // null
