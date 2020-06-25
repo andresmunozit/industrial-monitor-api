@@ -18,7 +18,7 @@ This section describes the endpoints of the API:
 |GET|/api/v1/admin/users/:id|Get an individual user|Yes|Admin|
 |POST|/api/v1/admin/users|Create a user|Yes|Admin|
 |PATCH|/api/v1/admin/users/:id|Update a user|Yes|Admin|
-|DELETE|/api/v1/admin/users/:id|Delete a user|No|Admin|
+|DELETE|/api/v1/admin/users/:id|Delete a user|Yes|Admin|
 |**Administration / Devices**|
 |GET|/api/v1/admin/devices|Index the application devices|No|Admin|
 |GET|/api/v1/admin/devices/:id|Get an individual device|No|Admin|
@@ -363,4 +363,22 @@ The only allowed query parameter is `resetPassword`. Any other parameter will re
 ```
 ### resetPassword
 
-The only accepted value is `true`, any other value will be ignored. This parameter set a temporary password to the user, and sends an email to the user, with the temporary password along with the instructions to change it.
+The only accepted value is `true`, any other value will be ignored. This parameter allows to set a temporary password to the user, and sends an email to the user, with the temporary password along with the instructions to change it.
+
+---
+
+|Method|Endpoint|
+|---|---|
+|DELETE|/api/v1/admin/users/:id|
+
+**Headers:**
+```
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1N...
+```
+
+**Request body:** None
+
+**Response code:** `200`
+
+**Response body:** None
