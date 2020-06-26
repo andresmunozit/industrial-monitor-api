@@ -56,5 +56,3 @@ test('Should throw an error if any parameter contains special characters', () =>
 afterAll(() => {
     return mongoose.connection.close();
 });
-
-// caps? numbers?
