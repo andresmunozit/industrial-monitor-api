@@ -1,4 +1,5 @@
 const welcome = (email, name, temporaryPassword) => {
+    if(!email || !name || !temporaryPassword) throw `"email", "name" and "temporaryPassword" arguments are required`;
     return {
         to: email,
         from: process.env.EMAIL_SENDER_ADDRESS,
@@ -9,6 +10,7 @@ const welcome = (email, name, temporaryPassword) => {
 };
 
 const resetPassword = (email, name, temporaryPassword) => {
+    if(!email || !name || !temporaryPassword) throw `"email", "name" and "temporaryPassword" arguments are required`;
     return {
         to: email,
         from: process.env.EMAIL_SENDER_ADDRESS,
