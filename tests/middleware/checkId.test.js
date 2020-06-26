@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('../../src/app');
 const checkId = require('../../src/middleware/checkId');
-const ObjectId = require('mongoose').Types.ObjectId;
+const mongoose = require('mongoose');
 
 test('Should return status 404 if a wrong id format is sent into the id parameter', async () => {
     app.get('/checkIdTest1/:id', checkId, (req, res) => {
@@ -20,7 +20,7 @@ test('Should call to next, and return status 200 if a correct format id is speci
         res.json('ok');
     });
 
-    const correctId = new ObjectId();
+    const correctId = new mongoose.Types.ObjectId();
 
     const response = await request(app)
         .get(`/checkIdTest2/${correctId}`)
@@ -28,4 +28,8 @@ test('Should call to next, and return status 200 if a correct format id is speci
         .expect(200);
 
     expect(response.body).toBe('ok');
+});
+
+afterAll(() => {
+    return mongoose.connection.close();
 });
