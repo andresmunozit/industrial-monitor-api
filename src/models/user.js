@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema({
         required: [true, 'Email is required'],
         trim: true,
         unique: true,
-        maxLenght: [64, 'The email is too long'],
+        maxlength: [64, 'The email is too long'],
         validate:{
             validator: function(v){
                 return validator.isEmail(v);
@@ -30,14 +30,14 @@ const userSchema = mongoose.Schema({
         required: [true, '"name" is required'],
         trim: true,
         unique: false,
-        maxLenght: [100, '"name" is too long']
+        maxlength: [100, '"name" is too long']
     },
     lastname: {
         type: String,
         required: [true, '"lastname" is required'],
         trim: true,
         unique: false,
-        maxLenght: [100, '"lastname" is too long'],
+        maxlength: [100, '"lastname" is too long'],
     },
     password: {
         type: String,
