@@ -2,3 +2,4 @@ node_modules/
 notes.md
 config/dev.env
 config/test.env
+coverage/

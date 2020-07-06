@@ -6,8 +6,9 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon -e js src/index.js",
-    "test": "jest --watchAll --verbose",
-    "seed": "node src/db/seed.js"
+    "test": "jest --watch --verbose",
+    "seed": "node src/db/seed.js",
+    "test-coverage": "env-cmd -f ./config/test.env jest --verbose --coverage=true"
   },
   "jest": {
     "testEnvironment": "node"
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/andresmunozit/industrial-monitor-api#readme",
   "devDependencies": {
+    "env-cmd": "^10.1.0",
     "jest": "^26.0.1",
     "nodemon": "^2.0.4",
     "supertest": "^4.0.2"

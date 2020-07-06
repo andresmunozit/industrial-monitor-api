@@ -67,6 +67,21 @@ To populate the database with seed data, like the `admin` user, run the followin
 docker exec -it [CONTAINER_ID] npm run seed
 ```
 
+For connecting to the `web` container's bash:
+
+```
+$ docker exec -it industrial-monitor-api_web_1 /bin/bash
+```
+For test coverage and todos:
+
+```
+$ docker exec -t industrial-monitor-api_web_1 npm run test-coverage
+```
+
+The result will look like this:
+
+![Test Coverage](https://github.com/andresmunozit/industrial-monitor-api/blob/master/img/test-coverage.png?raw=true)
+
 ## Login API
 
 |Method|Endpoint|
