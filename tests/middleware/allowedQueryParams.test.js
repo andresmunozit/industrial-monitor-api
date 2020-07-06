@@ -2,7 +2,6 @@ const app = require('../../src/app');
 const mongoose = require('mongoose');
 const request = require('supertest');
 const allowedQueryParams = require('../../src/middleware/allowedQueryParams');
-const { param } = require('../../src/routers/api');
 
 describe('When allowed query params is used into a route', () => {
 
