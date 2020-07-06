@@ -78,7 +78,46 @@ test('Should throw an error if a deletion of a non-existent token is attempted',
     };
 });
 
-test.todo('Test length validations');
+test('Test length validations', async () => {
+
+    const newUser = {
+        email: 'test@example.com',
+        name: 'test',
+        lastname: 'test',
+        role: 'user',
+        password: '1234567',  
+    };
+
+    const newUser1 = Object.create(newUser);
+    newUser1.email = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.com';
+    const user1 = new User(newUser1);
+    try{
+        const savedUser = await user1.save();
+        expext(savedUser).toBe(undefined);
+    } catch (e){
+        expect(e.errors.email.properties.message).toBe('The email is too long');
+    };
+
+    const newUser2 = Object.create(newUser);
+    newUser2.name = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+    const user2 = new User(newUser2);
+    try{
+        const savedUser = await user2.save();
+        expext(savedUser).toBe(undefined);
+    } catch (e){
+        expect(e.errors.name.properties.message).toBe('"name" is too long');
+    };
+
+    const newUser3 = Object.create(newUser);
+    newUser3.lastname = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+    const user3 = new User(newUser3);
+    try{
+        const savedUser = await user3.save();
+        expext(savedUser).toBe(undefined);
+    } catch (e){
+        expect(e.errors.lastname.properties.message).toBe('"lastname" is too long');
+    };
+});
 
 afterAll(() => {
     return mongoose.connection.close();
