@@ -4,6 +4,35 @@ This is a REST API to monitor industrial equipment. It's being developed using N
 ## Current Status
 This application is under development.
 
+## Setup Development Environment
+
+Create `.env` files.
+
+Start the containers:
+```
+$ docker-compose up
+```
+
+To populate the database with seed data, like the `admin` user, run the following command from another CLI:
+```
+docker exec -it [CONTAINER_ID] npm run seed
+```
+
+For connecting to the `web` container's bash:
+
+```
+$ docker exec -it industrial-monitor-api_web_1 /bin/bash
+```
+For test coverage and todos:
+
+```
+$ docker exec -t industrial-monitor-api_web_1 npm run test-coverage
+```
+
+The result will look like this:
+
+![Test Coverage](https://github.com/andresmunozit/industrial-monitor-api/blob/master/img/test-coverage.png?raw=true)
+
 ## Api Reference
 This section describes the endpoints of the API:
 
@@ -52,35 +81,6 @@ This section describes the endpoints of the API:
 |POST|/api/v1/user/devices/:id/alarms/:id|Create an alarm for a device|No|
 |PATCH|/api/v1/user/devices/:id/alarms/:id|Update an alarm for a device|No|
 |DELETE|/api/v1/user/devices/:id/alarms/:id|Delete an alarm for a device|No|
-
-## Setup Development Environment
-
-Create `.env` files.
-
-Start the containers:
-```
-$ docker-compose up
-```
-
-To populate the database with seed data, like the `admin` user, run the following command from another CLI:
-```
-docker exec -it [CONTAINER_ID] npm run seed
-```
-
-For connecting to the `web` container's bash:
-
-```
-$ docker exec -it industrial-monitor-api_web_1 /bin/bash
-```
-For test coverage and todos:
-
-```
-$ docker exec -t industrial-monitor-api_web_1 npm run test-coverage
-```
-
-The result will look like this:
-
-![Test Coverage](https://github.com/andresmunozit/industrial-monitor-api/blob/master/img/test-coverage.png?raw=true)
 
 ## Login API
 
