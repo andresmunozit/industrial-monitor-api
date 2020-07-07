@@ -35,6 +35,7 @@ const validateSortValues = sort => {
 
 const validateLimit = (limit, maxLimit) => {
     if (!limit) return DEFAULT_LIMIT;
+    if (Array.isArray(limit)) return {error: `A single value is supported for "limit" parameter, instead "${limit.join(', ')}" were provided.`};
     if (!parseInt(Number(limit))) return {error: `"limit" must be a positive integer, "${limit}" received instead.`};
     if (limit < 0 || limit > maxLimit) return {error: `"limit" must be an integer between 0 and ${maxLimit}, "${limit}" received instead.`};
     return parseInt(limit);
