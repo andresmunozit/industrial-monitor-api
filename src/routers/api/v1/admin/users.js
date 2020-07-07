@@ -5,7 +5,7 @@ const sendEmail = require('../../../../helpers/email/sendEmail');
 const User = require('../../../../models/user');
 const allowedBodyParams = require('../../../../middleware/allowedBodyParams');
 const allowedQueryParams = require('../../../../middleware/allowedQueryParams');
-const validateQuery = require('../../../../middleware/validateQuery');
+const { validateQuery } = require('../../../../middleware/validateQuery');
 const { welcome, resetPassword } = require('../../../../helpers/email/emailTemplates');
 const checkId = require('../../../../middleware/checkId');
 
