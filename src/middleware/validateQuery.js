@@ -59,7 +59,7 @@ const validateQuery = (allowedFields, allowedFilterQueryOperators = ALLOWED_FILT
         let filter, sort, skip, limit;
 
         filter = validateFields(req.query.filter, allowedFields);
-        if (filter.error) return res.status(400).json({msg: `${filter.error} "filter" parameter validation.'`});
+        if (filter.error) return res.status(400).json({msg: `${filter.error} "filter" parameter validation.`});
 
         filter = validateFilterQueryOperators(req.query.filter, allowedFilterQueryOperators);
         if (filter.error) return res.status(400).json({msg: `${filter.error} "filter" parameter validation.`});
