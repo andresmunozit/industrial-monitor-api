@@ -4,7 +4,6 @@ const DEFAULT_LIMIT = 20;
 
 const validateFields = (object, allowedFields) => {
     if (!object) return {};
-
     const objectFields = Object.keys(object);
     const notAllowedFields = objectFields.filter( objectField => !allowedFields.includes(objectField) );
     if(notAllowedFields.length) return {error: `Not allowed field(s): ${notAllowedFields.join(', ')}.`}
@@ -26,7 +25,6 @@ const validateFilterQueryOperators = (filter, allowedOperators) => {
 
 const validateSortValues = sort => {
     if (!sort) return {};
-
     for(const field in sort){
         if(!parseInt(Number(sort[field]))) return {error: `Sort can be equals to -1, 0 or 1. Instead "${sort[field]}" was received for field "${field}".`};
         if(sort[field] < -1 || sort[field] > 1) return {error: `Sort can be equals to -1, 0 or 1. Instead "${sort[field]}" was received for field "${field}".`};
@@ -37,20 +35,16 @@ const validateSortValues = sort => {
 
 const validateLimit = (limit, maxLimit) => {
     if (!limit) return DEFAULT_LIMIT;
-
     if (!parseInt(Number(limit))) return {error: `"limit" must be a positive integer, "${limit}" received instead.`};
     if (limit < 0 || limit > maxLimit) return {error: `"limit" must be an integer between 0 and ${maxLimit}, "${limit}" received instead.`};
-
     return parseInt(limit);
 };
 
 const validateSkip = skip => {
     if (!skip) return 0;
-    
     if (!parseInt(Number(skip))) return {error: `"skip" must be a positive integer, "${skip}" received instead.`};
     console.log('SKIP', skip)
     if (skip < 0 || skip > Math.pow(2, 31)) return {error: `"skip" must be an integer between 0 and 2^31, "${skip}" received instead.`};
-
     return parseInt(skip);
 };
 
