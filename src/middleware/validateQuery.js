@@ -28,7 +28,7 @@ const validateSortValues = sort => {
     if (!sort) return {};
 
     for(const field in sort){
-        if(!parseInt(Number(sort[field]))) return {error: `Sort can be equals to -1, 0 or 1. Instead "${sort[field]}" was received.`};
+        if(!parseInt(Number(sort[field]))) return {error: `Sort can be equals to -1, 0 or 1. Instead "${sort[field]}" was received for field "${field}".`};
         if(sort[field] < -1 || sort[field] > 1) return {error: `Sort can be equals to -1, 0 or 1. Instead "${sort[field]}" was received for field "${field}".`};
         sort[field] = parseInt(sort[field]);
     };
