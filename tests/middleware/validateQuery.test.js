@@ -83,12 +83,8 @@ describe('For a set of allowed fields, and default parameters', () => {
     });
 
     test.todo('Test duplicated parameters');
-
-
 });
 
 afterAll(() => {
     return mongoose.connection.close();
 });
-
-// /usr/src/app/src/routers/api/v1/admin/users.js:17
