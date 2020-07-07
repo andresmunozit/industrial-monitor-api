@@ -44,8 +44,8 @@ const validateLimit = (limit, maxLimit) => {
 const validateSkip = skip => {
     if (!skip) return 0;
     if (Array.isArray(skip)) return {error: `A single value is supported for "skip" parameter, instead "${skip.join(', ')}" were provided.`};
-    if (!parseInt(Number(skip))) return {error: `"skip" must be a positive integer, "${skip}" received instead.`};
-    if (skip < 0 || skip > Math.pow(2, 31)) return {error: `"skip" must be an integer between 0 and 2^31, "${skip}" received instead.`};
+    if (!parseInt(Number(skip))) return {error: `"skip" must be a positive integer, "${skip}" value was received instead.`};
+    if (skip < 0 || skip > Math.pow(2, 31)) return {error: `"skip" must be an integer between 0 and 2^31, "${skip}" value was received instead.`};
     return parseInt(skip);
 };
 
