@@ -11,7 +11,8 @@
     "test-coverage": "env-cmd -f ./config/test.env jest --verbose --coverage=true"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testTimeout": 5000
   },
   "repository": {
     "type": "git",
