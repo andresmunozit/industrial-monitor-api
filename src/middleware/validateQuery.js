@@ -82,4 +82,7 @@ const validateQuery = (allowedFields, allowedFilterQueryOperators = ALLOWED_FILT
     };
 };
 
-module.exports = validateQuery;
+module.exports = {
+    validateQuery,
+    ALLOWED_FILTER_QUERY_OPERATORS
+};
