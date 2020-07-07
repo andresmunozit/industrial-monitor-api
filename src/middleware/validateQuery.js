@@ -19,7 +19,7 @@ const validateFilterQueryOperators = (filter, allowedOperators) => {
         
         const fieldOperators = Object.keys(filter[field]);
         const notAllowedOperators = fieldOperators.filter( operator => !allowedOperators.includes(operator)); 
-        if(notAllowedOperators.length) return {error: `Not allowed operator(s) ${notAllowedOperators}`};
+        if(notAllowedOperators.length) return {error: `Not allowed operator(s): ${notAllowedOperators.join(', ')}.`};
     };
     return filter;
 };
