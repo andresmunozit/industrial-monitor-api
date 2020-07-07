@@ -13,14 +13,14 @@ const validateFields = (object, allowedFields) => {
 
 const validateFilterQueryOperators = (filter, allowedOperators) => {
     if (!filter) return {};
-
+    let notAllowedOperators = [];
     for(const field in filter){
         if(typeof filter[field] === 'string') break;
-        
         const fieldOperators = Object.keys(filter[field]);
-        const notAllowedOperators = fieldOperators.filter( operator => !allowedOperators.includes(operator)); 
-        if(notAllowedOperators.length) return {error: `Not allowed operator(s): ${notAllowedOperators.join(', ')}.`};
+        const fieldNotAllowedOperators = fieldOperators.filter( operator => !allowedOperators.includes(operator));
+        notAllowedOperators = [...notAllowedOperators, ...fieldNotAllowedOperators];
     };
+    if(notAllowedOperators.length) return {error: `Not allowed operator(s): ${notAllowedOperators.join(', ')}.`};
     return filter;
 };
 
