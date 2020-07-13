@@ -1,4 +1,7 @@
 # Industrial Monitor API
+
+[![Build Status](https://travis-ci.org/andresmunozit/industrial-monitor-api.svg?branch=master)](https://travis-ci.org/andresmunozit/industrial-monitor-api)
+
 This is a REST API to monitor industrial equipment. It's being developed using Node.js, ES6/ESNext, Express, JWT, Bcrypt, Jest, Supertest, MongoDB, Mongoose, Docker, Docker Compose, etc.
 
 ## Current Status

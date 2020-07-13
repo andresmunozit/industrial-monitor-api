@@ -5,7 +5,7 @@ dist: bionic
 services:
     - mongodb
 env:
-    - DB_PATH=mongodb://127.0.0.1:27017/im-api-test JWT_SECRET=ci-env-secret EMAIL_SENDER_ADDRESS=admin@example.com FRONTEND_URL=http://127.0.0.1:3000
+    - DB_PATH=mongodb://127.0.0.1:27017/im-api-test JWT_SECRET=ci-env-secret EMAIL_SENDER_ADDRESS=admin@example.com FRONTEND_URL=http://127.0.0.1:3000 SENDGRID_API_KEY=ci-env-sendgrid-key
 cache: 
     directories:
         - node_modules
