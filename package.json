@@ -8,6 +8,7 @@
     "dev": "nodemon -e js src/index.js",
     "test": "jest --watch --verbose",
     "seed": "node src/db/seed.js",
+    "test-ci": "jest --verbose --ci --coverage=true",
     "test-coverage": "env-cmd -f ./config/test.env jest --verbose --coverage=true"
   },
   "jest": {
