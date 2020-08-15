@@ -36,7 +36,6 @@ for(let i = 0; i < NUM_USERS - 1; i++){
 const configDatabase = async () => {
     await User.deleteMany();
     const dbAdminsPromises = admins.map( admin => {
-        console.log(admin);
         return new User(admin).save();
     });
     
