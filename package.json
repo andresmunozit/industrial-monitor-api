@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon -e js src/index.js",
-    "test": "jest --watch --verbose",
+    "test": "jest --watch --verbose --runInBand",
     "seed": "node src/db/seed.js",
-    "test-ci": "jest --verbose --ci --coverage=true",
-    "test-coverage": "env-cmd -f ./config/test.env jest --verbose --coverage=true"
+    "test-ci": "jest --verbose --ci --coverage=true --runInBand",
+    "test-coverage": "env-cmd -f ./config/test.env jest --runInBand --verbose --coverage=true"
   },
   "jest": {
     "testEnvironment": "node",
