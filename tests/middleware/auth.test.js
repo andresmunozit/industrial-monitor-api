@@ -4,7 +4,7 @@ const app = require('../../src/app');
 const faker = require('faker');
 const User = require('../../src/models/user');
 const auth = require('../../src/middleware/auth');
-const { users, admins, configDatabase } = require('../fixtures/database');
+const { mockUsers } = require('../fixtures/database');
 
 const TEST_AUTH_ROUTE = '/testAuth';
 
@@ -14,23 +14,11 @@ beforeAll( () => { // Create auth route
     });
 });
 
-beforeEach(async () => { // Delete db and generate tokens
-    await configDatabase();
-
-    for(const admin of admins){
-        const dbAdmin = await User.findById(admin._id);
-        await dbAdmin.createToken();
-    };
-
-    for(const user of users){
-        const dbUser = await User.findById(user._id);
-        await dbUser.createToken();
-    };
-});
-
 describe('Once a user is logged in and has an active token', () => {
     test('Should return a user and a token when the auth token is right', async () => {
+        const { users } = await mockUsers({});
         const testUser = users[0];
+        
         const user = await User.findById(testUser._id);
         const token = user.tokens[0].token;
         const res = await request(app)
