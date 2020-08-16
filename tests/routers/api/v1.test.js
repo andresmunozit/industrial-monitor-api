@@ -1,103 +1,93 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
-const app = require('../../../src/app');
+const faker = require('faker');
 const User = require('../../../src/models/user');
-const { userTwo, setupDatabase } = require('../../fixtures/db');
+const app = require('../../../src/app');
+const { mockUsers } = require('../../fixtures/database');
 
-beforeEach( setupDatabase );
+const LOGIN_ROUTE = '/api/v1/login';
+const LOGOUT_ROUTE = '/api/v1/logout';
 
-// Login tests
-test('Should authenticate a user', async () => {
-    const user = userTwo;
-    const response = await request(app)
-        .post('/api/v1/login')
-        .send({
-            email: user.email,
-            password: user.password
-        })
-        .expect(200);
-
-    const userDB = await User.findById(user._id);
+describe('For existent users', () => {
+    test('Should authenticate a user', async () => {
+        const {users} = await mockUsers({login: false});
+        const testUser = users[0];
+        const {email, password} = testUser;
         
-    expect(response.body.user._id).toBe(user._id.toString());
-    expect(response.body.token).toBe(userDB.tokens[0].token);
-});
+        const res = await request(app)
+            .post(LOGIN_ROUTE)
+            .send({email, password})
+            .expect(200)
 
-test('Should not authenticate a user with wrong username', async () => {
-    const user = userTwo;
-    const response = await request(app)
-        .post('/api/v1/login')
+        const {user, token} = res.body;
+
+        expect(user._id).toBe(testUser._id.toString());
+        
+        const testDbUser = await User.findById(testUser._id);
+        expect(token).toBe(testDbUser.tokens[0].token);
+    });
+
+    test('Should not authenticate a user with wrong credentials', async () => {
+        const {users} = await mockUsers({login: false});
+        const {email, password} = users[0];
+
+        const res1 = await request(app)
+            .post(LOGIN_ROUTE)
+            .send({
+                emai: faker.random.word() + email,
+                password
+            })
+            .expect(403);
+
+        expect(res1.body.msg).toBe('Wrong credentials');
+
+        const res2 = await request(app)
+        .post(LOGIN_ROUTE)
         .send({
-            email: 'wrong@email.com',
-            password: user.password
+            email,
+            password: faker.random.word() + password
         })
         .expect(403);
 
-    expect(response.body.msg).toBe('Wrong credentials');
-});
+        expect(res2.body.msg).toBe('Wrong credentials');
 
-test('Should not authenticate a user with wrong password', async () => {
-    const user = userTwo;
-    const response = await request(app)
-        .post('/api/v1/login')
+        const res3 = await request(app)
+        .post(LOGIN_ROUTE)
         .send({
-            email: user.email,
-            password: 'wrong password'
+            email: faker.random.word() + email,
+            password: faker.random.word() + password
         })
         .expect(403);
 
-    expect(response.body.msg).toBe('Wrong credentials');
+        expect(res3.body.msg).toBe('Wrong credentials');
+    })
+
 });
 
-// Logout tests
-test('Should logout a logged in user', async () => {
-    const user = userTwo;
+describe('Once a user have logged in', () => {
+    test('Should be able to logout once', async () => {
+        const {users} = await mockUsers({login: false})
+        const {email, password} = users[0];
+        
+        const loginRes = await request(app)
+            .post(LOGIN_ROUTE)
+            .send({email, password})
+            .expect(200)
+        
+        const {token} = loginRes.body;
 
-    const loginResponse = await request(app)
-        .post('/api/v1/login')
-        .send({
-            email: user.email,
-            password: user.password
-        })
-        .expect(200);
+        await request(app)
+            .get(LOGOUT_ROUTE)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200)
 
-    const token = loginResponse.body.token;
-    const userDBBeforeLogout = await User.findById(user._id);
-    expect(userDBBeforeLogout.validToken(token)).toBe(true);
+        const logoutAgainRes = await request(app)
+            .get(LOGOUT_ROUTE)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(403)
 
-    const logoutResponse = await request(app)
-        .get('/api/v1/logout')
-        .set('Authorization', 'Bearer ' + token)
-        .send()
-        .expect(200);
-
-    const userDBAfterLogout = await User.findById(user._id);
-    expect(userDBAfterLogout.validToken(token)).toBe(false);
-});
-
-test('Should receive "Not authorized" after logout', async () => {
-    const user = userTwo;
-    const loginResponse = await request(app)
-        .post('/api/v1/login')
-        .send({
-            email: user.email,
-            password: user.password
-        })
-        .expect(200);
-    const token = loginResponse.body.token;    
-
-    const logoutResponse = await request(app)
-        .get('/api/v1/logout')
-        .set('Authorization', 'Bearer ' + token)
-        .send()
-        .expect(200);
-
-    const notAuthorizedResponse = await request(app)
-        .get('/api/v1/logout')
-        .set('Authorization', 'Bearer ' + token)
-        .send()
-        .expect(403);
-    expect(notAuthorizedResponse.body.msg).toBe('Not authorized');
+        expect(logoutAgainRes.body.msg).toBe('Not authorized');
+    });
 });
 
 afterAll(() => {
