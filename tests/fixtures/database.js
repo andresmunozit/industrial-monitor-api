@@ -2,53 +2,50 @@ const mongoose = require('mongoose');
 const faker = require('faker');
 
 const User = require('../../src/models/user');
+const PASSWORD = 'ABCD-1234' 
 
-const NUM_ADMINS = 2;
-const NUM_USERS = 2;
-const PASSWORD = 'ABCD-1234';
+const mockUsers = async ({role = User.ROLE.USER, password = PASSWORD, count = 1, persist = true, login = true, clean = true}) => {
+    const users = [];
+    let dbUsers = [];
+    const result = {};
 
-// Array of admins
-const admins = [];
-for(let i = 0; i < NUM_ADMINS - 1; i++){
-    admins[i] = {
-        _id: new mongoose.Types.ObjectId(),
-        email: faker.internet.email(),
-        name: faker.name.firstName(),
-        lastname: faker.name.lastName(),
-        password: PASSWORD,
-        role: User.ROLE.ADMIN
-    }
-};
+    if(clean){
+        await User.deleteMany();
+    };
 
-// Array of users
-const users = [];
-for(let i = 0; i < NUM_USERS - 1; i++){
-    users[i] = {
-        _id: new mongoose.Types.ObjectId(),
-        email: faker.internet.email(),
-        name: faker.name.firstName(),
-        lastname: faker.name.lastName(),
-        password: PASSWORD,
-        role: User.ROLE.USER
-    }
-};
+    for(let i = 0; i < count; i++){
+        users[i] = {
+            _id: new mongoose.Types.ObjectId(),
+            email: faker.internet.email(),
+            name: faker.name.firstName(),
+            lastname: faker.name.lastName(),
+            password,
+            role,
+        }
+    };
+    result.users = users;
 
-const configDatabase = async () => {
-    await User.deleteMany();
-    const dbAdminsPromises = admins.map( admin => {
-        return new User(admin).save();
-    });
-    
-    const dbUsersPromises = users.map( user => {
-        return new User(user).save();
-    });
+    if(persist) {
+        const dbUsersPromises = users.map( user => {
+            return new User(user).save();
+        });
+        dbUsers = await Promise.all(dbUsersPromises);
+        result.dbUsers = dbUsers;
+    };
 
-    await Promise.all(dbAdminsPromises);
-    await Promise.all(dbUsersPromises);
+    if(persist && login) {
+        const tokenPromises = dbUsers.map( dbUser => {
+            return dbUser.createToken();
+        });
+        const tokens = await Promise.all(tokenPromises);
+        users.forEach( (user, i ) => {
+            user.token = tokens[i];
+        });
+    };
+
+    return result;
 };
 
 module.exports = {
-    configDatabase,
-    admins,
-    users,
+    mockUsers
 };
