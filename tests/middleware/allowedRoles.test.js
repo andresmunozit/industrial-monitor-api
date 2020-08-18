@@ -3,94 +3,84 @@ const request = require('supertest');
 const auth = require('../../src/middleware/auth');
 const allowedRoles = require('../../src/middleware/allowedRoles');
 const User = require('../../src/models/user');
-const { userTwo, userThree, setupDatabase } = require('../fixtures/db');
+const { mockUsers } = require('../fixtures/database');
 const mongoose = require('mongoose');
 
-beforeEach(setupDatabase);
+const TEST_ADMIN_ROUTE = '/testAdminRoute';
+const TEST_USER_ROUTE = '/testUserRoute';
+const TEST_USER_ADMIN_ROUTE = '/testUserAdminRoute';
 
-test('Should authorize "admin" only', async () => {
-    app.use('/testAdminRoute', auth);
-    app.use('/testAdminRoute', allowedRoles(
-        User.ROLE.ADMIN
-    ));
-
-    app.get('/testAdminRoute', (req, res) => {
-        res.json({msg: 'Only admin is authorized'});
+beforeAll(() => {
+    app.get(TEST_ADMIN_ROUTE, auth, allowedRoles(User.ROLE.ADMIN), (req, res) => {
+        res.json();
     });
-
-    const user = await User.findById(userTwo._id);
-    const userToken = await user.createToken();
-
-    const admin = await User.findById(userThree._id);
-    const adminToken = await admin.createToken();
-
-    const adminResponse = await request(app)
-        .get('/testAdminRoute')
-        .set('Authorization', 'Bearer ' + adminToken)
-        .send()
-        .expect(200)
-    expect(adminResponse.body.msg).toBe('Only admin is authorized');
-
-    const userResponse = await request(app)
-        .get('/testAdminRoute')
-        .set('Authorization', 'Bearer ' + userToken)
-        .send()
-        .expect(403)
-    expect(userResponse.body.msg).toBe('Not authorized');
+    app.get(TEST_USER_ROUTE, auth, allowedRoles(User.ROLE.USER), (req, res) => {
+        res.json();
+    });
+    app.get(TEST_USER_ADMIN_ROUTE, auth, allowedRoles(User.ROLE.USER, User.ROLE.ADMIN), (req, res) => {
+        res.json();
+    });
 });
 
-test('Should authorize "user" only', async () => {
+describe('Once a user has logged in and has an active token', () => {
+    test('Should authorize admin only', async () => {
+        const { users: admins } = await mockUsers({role: User.ROLE.ADMIN});
+        const { users } = await mockUsers({clean: false});
+        const testAdmin = admins[0];
+        const testUser = users[0];
+        
+        const resAdmin = await request(app)
+            .get(TEST_ADMIN_ROUTE)
+            .set('Authorization', `Bearer ${testAdmin.token}`)
+            .send()
+            .expect(200);
 
-    app.get('/testUserRoute', auth, allowedRoles(User.ROLE.USER), (req, res) => {
-        res.json({msg: 'Only user is authorized'});
+        const resUser = await request(app)
+            .get(TEST_ADMIN_ROUTE)
+            .set('Authorization', `Bearer ${testUser.token}`)
+            .send()
+            .expect(403);
+        expect(resUser.body.msg).toBe('Not authorized');
     });
 
-    const user = await User.findById(userTwo._id);
-    const userToken = await user.createToken();
+    test('Should authorize user only', async () => {
+        const { users: admins } = await mockUsers({role: User.ROLE.ADMIN});
+        const { users } = await mockUsers({clean: false});
+        const testAdmin = admins[0];
+        const testUser = users[0];
+        
+        const resAdmin = await request(app)
+            .get(TEST_USER_ROUTE)
+            .set('Authorization', `Bearer ${testAdmin.token}`)
+            .send()
+            .expect(403);
+        expect(resAdmin.body.msg).toBe('Not authorized');
 
-    const admin = await User.findById(userThree._id);
-    const adminToken = await admin.createToken();
-
-    const adminResponse = await request(app)
-        .get('/testUserRoute')
-        .set('Authorization', 'Bearer ' + adminToken)
-        .send()
-        .expect(403)
-    expect(adminResponse.body.msg).toBe('Not authorized');
-
-    const userResponse = await request(app)
-        .get('/testUserRoute')
-        .set('Authorization', 'Bearer ' + userToken)
-        .send()
-        .expect(200)
-    expect(userResponse.body.msg).toBe('Only user is authorized');
-});
-
-test('Should authorize "admin" and "user"', async () => {
-
-    app.get('/testAdminAndUserRoute', auth, allowedRoles(User.ROLE.USER, User.ROLE.ADMIN), (req, res) => {
-        res.json({msg: 'Admin and user are authorized'});
+        const resUser = await request(app)
+            .get(TEST_USER_ROUTE)
+            .set('Authorization', `Bearer ${testUser.token}`)
+            .send()
+            .expect(200);
     });
 
-    const user = await User.findById(userTwo._id);
-    const userToken = await user.createToken();
+    test('Should authorize admin and user', async () => {
+        const { users: admins } = await mockUsers({role: User.ROLE.ADMIN});
+        const { users } = await mockUsers({clean: false});
+        const testAdmin = admins[0];
+        const testUser = users[0];
+        
+        const resAdmin = await request(app)
+            .get(TEST_USER_ADMIN_ROUTE)
+            .set('Authorization', `Bearer ${testAdmin.token}`)
+            .send()
+            .expect(200);
 
-    const admin = await User.findById(userThree._id);
-    const adminToken = await admin.createToken();
-
-    const adminResponse = await request(app)
-        .get('/testAdminAndUserRoute')
-        .set('Authorization', 'Bearer ' + adminToken)
-        .send()
-        .expect(200)
-    expect(adminResponse.body.msg).toBe('Admin and user are authorized');
-
-    const userResponse = await request(app)
-        .get('/testAdminAndUserRoute')
-        .set('Authorization', 'Bearer ' + userToken)
-        .send()
-        .expect(200)
-    expect(userResponse.body.msg).toBe('Admin and user are authorized');
+        const resUser = await request(app)
+            .get(TEST_USER_ADMIN_ROUTE)
+            .set('Authorization', `Bearer ${testUser.token}`)
+            .send()
+            .expect(200);
+    });
 });
 
 afterAll(() => {

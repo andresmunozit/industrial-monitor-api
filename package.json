@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon -e js src/index.js",
-    "test": "jest --watch --verbose",
+    "test": "jest --watch --verbose --runInBand",
     "seed": "node src/db/seed.js",
-    "test-ci": "jest --verbose --ci --coverage=true",
-    "test-coverage": "env-cmd -f ./config/test.env jest --verbose --coverage=true"
+    "test-ci": "jest --verbose --ci --coverage=true --runInBand",
+    "test-coverage": "env-cmd -f ./config/test.env jest --runInBand --verbose --coverage=true"
   },
   "jest": {
     "testEnvironment": "node",
@@ -27,6 +27,7 @@
   "homepage": "https://github.com/andresmunozit/industrial-monitor-api#readme",
   "devDependencies": {
     "env-cmd": "^10.1.0",
+    "faker": "^4.1.0",
     "jest": "^26.0.1",
     "nodemon": "^2.0.4",
     "supertest": "^4.0.2"
@@ -34,6 +35,7 @@
   "dependencies": {
     "@sendgrid/mail": "^7.2.1",
     "bcryptjs": "^2.4.3",
+    "celebrate": "^12.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.17",
