@@ -1,11 +1,12 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
+const { bearerTokenSchema } = require('../validation-schemas/headers/authorization');
 
 const auth = async (req, res, next) => {
-    
-    const authHeader = req.get('Authorization');
-    if(!authHeader || !authHeader.includes('Bearer ')) return res.status(403).json({msg: 'Not authorized'});
-    const token = authHeader.split(' ')[1];
+    const { error } = bearerTokenSchema.validate(req.headers);
+    if(error) return res.status(403).json({msg: 'Not authorized'})
+
+    const token = req.get('Authorization').split(' ')[1];
 
     try{
         const tokenPayload = jwt.verify(token, process.env.JWT_SECRET);
